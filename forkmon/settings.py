@@ -26,7 +26,7 @@ SECRET_KEY = 'e3y=fqa9d!d04_*46=64n$x1!m5#_h074#0u#pttn*nkud!em-'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'forkmonitor.us-east-1.elasticbeanstalk.com',
+    'forkmon.us-east-1.elasticbeanstalk.com',
     'btcforkmonitor.info',
 ]
 
