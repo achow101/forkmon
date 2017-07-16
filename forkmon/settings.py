@@ -25,7 +25,10 @@ SECRET_KEY = 'e3y=fqa9d!d04_*46=64n$x1!m5#_h074#0u#pttn*nkud!em-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'forkmonitor.us-east-1.elasticbeanstalk.com',
+    'btcforkmonitor.info',
+]
 
 
 # Application definition
