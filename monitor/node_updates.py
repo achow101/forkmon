@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 import requests
-import json
+import os
 
 from .models import *
 
@@ -14,7 +14,7 @@ def update_nodes():
 
         # get best block hash
         r = requests.post(url, data='{"method": "getbestblockhash", "params": [] }',
-                          auth=('bitcoin', 'password'))
+                          auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
         if r.status_code != 200:
             continue
         rj = r.json()
@@ -22,7 +22,7 @@ def update_nodes():
 
         # Get the block header for best block hash
         r = requests.post(url, data='{"method": "getblockheader", "params": ["'+ best_block + '"] }',
-                          auth=('bitcoin', 'password'))
+                          auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
         if r.status_code != 200:
             continue
         rj = r.json()
@@ -58,7 +58,7 @@ def update_nodes():
             # walk backwards until node height matches db height
             while height > blocks[i].height:
                 r = requests.post(url, data='{"method": "getblockheader", "params": ["' + prev + '"] }',
-                                  auth=('bitcoin', 'password'))
+                          auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
                 if r.status_code != 200:
                     continue
                 rj = r.json()
@@ -89,7 +89,7 @@ def update_nodes():
 
                 # get block from node
                 r = requests.post(url, data='{"method": "getblockheader", "params": ["' + prev + '"] }',
-                                  auth=('bitcoin', 'password'))
+                          auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
                 if r.status_code != 200:
                     continue
                 rj = r.json()
