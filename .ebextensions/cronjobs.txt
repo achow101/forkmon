@@ -1,0 +1,6 @@
+* * * * * source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
+* * * * * sleep 10; source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
+* * * * * sleep 20; source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
+* * * * * sleep 30; source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
+* * * * * sleep 40; source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
+* * * * * sleep 50; source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates

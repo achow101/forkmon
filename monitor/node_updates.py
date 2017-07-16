@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import requests
 import os
+import datetime
 
 from .models import *
 
@@ -9,6 +10,7 @@ def update_nodes():
 
     # update in-db chain for each node
     nodes = Node.objects.all()
+    print("Beginning update at " + str(datetime.datetime.now()))
     for node in nodes:
         url = node.url
 
@@ -178,3 +180,5 @@ def update_nodes():
         for node in nodes:
             node.highest_divergence = 0
             node.save()
+
+    print("Updated Completed at " + str(datetime.datetime.now()))
