@@ -17,7 +17,7 @@ def update_nodes():
                           auth=('bitcoin', 'password'))
         if r.status_code != 200:
             continue
-        rj = json.loads(str(r.content))
+        rj = r.json()
         best_block = rj['result']
 
         # Get the block header for best block hash
@@ -25,7 +25,7 @@ def update_nodes():
                           auth=('bitcoin', 'password'))
         if r.status_code != 200:
             continue
-        rj = json.loads(str(r.content))
+        rj = r.json()
         header = rj['result']
         prev = header['previousblockhash']
         height = header['height']
@@ -61,7 +61,7 @@ def update_nodes():
                                   auth=('bitcoin', 'password'))
                 if r.status_code != 200:
                     continue
-                rj = json.loads(str(r.content))
+                rj = r.json()
                 header = rj['result']
                 prev = header['previousblockhash']
                 hash = header['hash']
@@ -92,7 +92,7 @@ def update_nodes():
                                   auth=('bitcoin', 'password'))
                 if r.status_code != 200:
                     continue
-                rj = json.loads(str(r.content))
+                rj = r.json()
                 header = rj['result']
                 prev = header['previousblockhash']
                 hash = header['hash']
