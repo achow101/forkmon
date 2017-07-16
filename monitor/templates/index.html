@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bitcoin Fork Monitor</title>
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static 'index.css' %}">
+</head>
+<body>
+    {% if chain_split %}
+        <div style="background-color: red;font-size: x-large;color: blue" align="center">
+        WARNING: A CHAIN SPLIT HAS BEEN DETECTED.
+        </div>
+    {% endif %}
+    <table>
+        <tr>
+        {% for n in nodes %}
+            <td>
+                <table class="nodes_table">
+                    <tr>
+                        <td>
+                            Node: {{ n.name }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Current height: {{ n.best_block_height }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Best Block Hash: {{ n.best_block_hash }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Previous Block Hash: {{ n.prev_block_hash }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Has Experienced a Blockchain Reorganization: {% if n.has_reorged %}<span style="color: red">Yes</span>{% else %}No{% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Has not forked but is behind other nodes: {% if n.is_behind %}<span style="color: red">Yes</span>{% else %}No{% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {% if n.highest_divergence != 0 %}
+                                Most Recent Forking Block Hash: {{ n.highest_diverged_hash }}
+                                Most Recent Forking Block Height: {{ n.highest_divergence }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        {% endfor %}
+        </tr>
+    </table>
+</body>
+</html>
