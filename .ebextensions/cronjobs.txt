@@ -1,6 +1,6 @@
-* * * * * root bash /opt/python/current/env && source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
-* * * * * root sleep 10; bash /opt/python/current/env && source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
-* * * * * root sleep 20; bash /opt/python/current/env && source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
-* * * * * root sleep 30; bash /opt/python/current/env && source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
-* * * * * root sleep 40; bash /opt/python/current/env && source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
-* * * * * root sleep 50; bash /opt/python/current/env && source /opt/python/run/venv/bin/activate && python /opt/python/current/app/manage.py node_updates
+* * * * * root bash /opt/python/current/app/update.sh &>> /var/log/node.log
+* * * * * root sleep 10; bash /opt/python/current/app/update.sh &>> /var/log/node.log
+* * * * * root sleep 20; bash /opt/python/current/app/update.sh &>> /var/log/node.log
+* * * * * root sleep 30; bash /opt/python/current/app/update.sh &>> /var/log/node.log
+* * * * * root sleep 40; bash /opt/python/current/app/update.sh &>> /var/log/node.log
+* * * * * root sleep 50; bash /opt/python/current/app/update.sh &>> /var/log/node.log
