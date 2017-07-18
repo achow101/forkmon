@@ -16,7 +16,7 @@
         <tr>
         {% for n in nodes %}
             <td>
-                <table class="nodes_table">
+                <table class="nodes_table" style="{% if chain_split %}border-color: red{% else %}border-color: green{% endif %}">
                     <tr>
                         <td>
                             Node: {{ n.name }}
@@ -39,12 +39,14 @@
                     </tr>
                     <tr>
                         <td>
-                            Has Experienced a Blockchain Reorganization: {% if n.has_reorged %}<span style="color: red">Yes</span>{% else %}No{% endif %}
+                            Has Experienced a Blockchain Reorganization:
+                            {% if n.has_reorged %}<span style="color: red">Yes</span>{% else %}No{% endif %}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Has not forked but is behind other nodes: {% if n.is_behind %}<span style="color: red">Yes</span>{% else %}No{% endif %}
+                            Has not forked but is behind other nodes:
+                            {% if n.is_behind %}<span style="color: red">Yes</span>{% else %}No{% endif %}
                         </td>
                     </tr>
                     <tr>
