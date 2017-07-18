@@ -2,69 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <title>Bitcoin Fork Monitor</title>
-    {% load static %}
-    <link type="text/css" rel="stylesheet" href="{% static 'index.css' %}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 </head>
 <body>
     {% if chain_split %}
-        <div style="background-color: red;font-size: x-large;color: blue" align="center">
+        <div style="font-size: x-large" align="center" class="alert alert-danger my-2 mx-2">
         WARNING: A CHAIN SPLIT HAS BEEN DETECTED.
         </div>
     {% endif %}
-    <table>
-        <tr>
-        {% for n in nodes %}
-            <td>
-                <table class="nodes_table" style="{% if chain_split %}border-color: red{% else %}border-color: green{% endif %}">
-                    <tr>
-                        <td>
-                            Node: {{ n.name }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Current height: {{ n.best_block_height }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Best Block Hash: {{ n.best_block_hash }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Previous Block Hash: {{ n.prev_block_hash }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Has Experienced a Blockchain Reorganization:
-                            {% if n.has_reorged %}<span style="color: red">Yes</span>{% else %}No{% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Has not forked but is behind other nodes:
-                            {% if n.is_behind %}<span style="color: red">Yes</span>{% else %}No{% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            {% if n.highest_divergence != 0 %}
-                                Most Recent Forking Block Hash: {{ n.highest_diverged_hash }}
-                                Most Recent Forking Block Height: {{ n.highest_divergence }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        {% endfor %}
-        </tr>
-    </table>
-    <div align="center">
+    <div class="card-deck my-3 mx-2">
+    {% for n in nodes %}
+        <div class="card {% if chain_split %}card-danger{% else %}card-success{% endif %} w-25">
+            <div class="card-header text-white">
+                Node: {{ n.name }}
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item">Current height: {{ n.best_block_height }}</li>
+                <li class="list-group-item ">Best Block Hash: <small>{{ n.best_block_hash }}</small></li>
+                <li class="list-group-item">Previous Block Hash: <small>{{ n.prev_block_hash }}</small></li>
+                <li class="list-group-item">
+                    Has Experienced a Blockchain Reorganization: {% if n.has_reorged %}<span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>
+                <li class="list-group-item">
+                    Has not forked but is behind other nodes: {% if n.is_behind %}<span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>
+                {% if n.highest_divergence > 0 %}
+                    <li class="list-group-item">Most Recent Forking Block Hash: <small>{{ n.highest_diverged_hash }}</small></li>
+                    <li class="list-group-item">Most Recent Forking Block Height: <small>{{ n.highest_divergence }}</small></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endfor %}
+    </div>
+    <div class="w-75 text-center pt-5 mx-auto">
         <h3>About This Website</h3>
-        <p>
+        <p class="lead">
             <b>What is this website?</b> This website is for warning users if the Bitcoin blockchain has experienced a
             chain split due to the various fork proposals such as Segwit2x and BIP 148 UASF. If a chain split is detected,
             there will be
@@ -74,13 +49,13 @@
             of the other nodes and has not split onto a different chain from other node. It will also warn if one of the
             nodes has recently experienced a blockchain reorganization.
         </p>
-        <p>
+        <p class="lead">
             <b>How does this website work?</b> The website runs a node for each of the nodes displayed above. A process
             run every ten seconds to check to see if each of the nodes has diverged from each other. To avoid triggering
             the warning in cases of orphaned blocks and latency, the site will only warn if a chain split of more than two
             blocks is detected.
         </p>
-        <p>
+        <p class="lead">
             <b>How can I contribute to the website?</b> The source code for this website is available on
             <a href="https://github.com/achow101/forkmon">github</a>. It is written in python and uses Django. Pull requests
             are welcome. You can also donate to the developer at 1AQx99s7q1wVinbgXbA48BaZQVWpHe5gYM
