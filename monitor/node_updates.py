@@ -12,108 +12,113 @@ def update_nodes():
     nodes = Node.objects.all()
     print("Beginning update at " + str(datetime.datetime.now()))
     for node in nodes:
-        url = node.url
+        # try except statements for catching any errors that come from the requests. if there is an error, just skip
+        # the node and continue
+        try:
+            url = node.url
 
-        # get best block hash
-        r = requests.post(url, data='{"method": "getbestblockhash", "params": [] }',
-                          auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
-        if r.status_code != 200:
-            continue
-        rj = r.json()
-        best_block = rj['result']
+            # get best block hash
+            r = requests.post(url, data='{"method": "getbestblockhash", "params": [] }',
+                              auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
+            if r.status_code != 200:
+                continue
+            rj = r.json()
+            best_block = rj['result']
 
-        # Get the block header for best block hash
-        r = requests.post(url, data='{"method": "getblockheader", "params": ["'+ best_block + '"] }',
-                          auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
-        if r.status_code != 200:
-            continue
-        rj = r.json()
-        header = rj['result']
-        prev = header['previousblockhash']
-        height = header['height']
-        hash = header['hash']
+            # Get the block header for best block hash
+            r = requests.post(url, data='{"method": "getblockheader", "params": ["'+ best_block + '"] }',
+                              auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
+            if r.status_code != 200:
+                continue
+            rj = r.json()
+            header = rj['result']
+            prev = header['previousblockhash']
+            height = header['height']
+            hash = header['hash']
 
-        # check that this node's current top block is this block or the previous block
-        blocks = Block.objects.all().filter(node=node, active=True).order_by("-height")
+            # check that this node's current top block is this block or the previous block
+            blocks = Block.objects.all().filter(node=node, active=True).order_by("-height")
 
-        # same block
-        if blocks[0].hash == hash:
-            node.best_block_hash = hash
-            node.best_block_height = height
-            node.prev_block_hash = prev
-            node.save()
-            continue
-        # different block
-        # next block: prev hash matches
-        elif prev == blocks[0].hash:
-            # Add block to db
-            Block(hash=hash, height=height, prev=blocks[0], node=node).save()
-            node.best_block_hash = hash
-            node.best_block_height = height
-            node.prev_block_hash = prev
-            node.save()
-        # otherwise need to reorg
-        else:
-            # node's height is ahead
-            blocks_to_add = [hash]
-            i = 0
-            # walk backwards until node height matches db height
-            while height > blocks[i].height:
-                r = requests.post(url, data='{"method": "getblockheader", "params": ["' + prev + '"] }',
-                          auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
-                if r.status_code != 200:
-                    continue
-                rj = r.json()
-                header = rj['result']
-                prev = header['previousblockhash']
-                hash = header['hash']
-                height = header['height']
-                if height > blocks[i].height:
+            # same block
+            if blocks[0].hash == hash:
+                node.best_block_hash = hash
+                node.best_block_height = height
+                node.prev_block_hash = prev
+                node.save()
+                continue
+            # different block
+            # next block: prev hash matches
+            elif prev == blocks[0].hash:
+                # Add block to db
+                Block(hash=hash, height=height, prev=blocks[0], node=node).save()
+                node.best_block_hash = hash
+                node.best_block_height = height
+                node.prev_block_hash = prev
+                node.save()
+            # otherwise need to reorg
+            else:
+                # node's height is ahead
+                blocks_to_add = [hash]
+                i = 0
+                # walk backwards until node height matches db height
+                while height > blocks[i].height:
+                    r = requests.post(url, data='{"method": "getblockheader", "params": ["' + prev + '"] }',
+                              auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
+                    if r.status_code != 200:
+                        continue
+                    rj = r.json()
+                    header = rj['result']
+                    prev = header['previousblockhash']
+                    hash = header['hash']
+                    height = header['height']
+                    if height > blocks[i].height:
+                        blocks_to_add.append(hash)
+                # walk down db chain until node height matches
+                while blocks[i].height > height:
+                    # deactivate the block here
+                    blocks[i].active = False
+                    blocks[i].save()
+
+                    # increment
+                    i += 1
+                # now DB and node are at same height, walk backwards through both to find common ancestor
+                deactivated = 0
+                while blocks[i].hash != hash:
+                    # deactivate the block here
+                    blocks[i].active = False
+                    blocks[i].save()
+                    deactivated += 1
+
+                    # increment
+                    i += 1
+
+                    # get block from node
+                    r = requests.post(url, data='{"method": "getblockheader", "params": ["' + prev + '"] }',
+                              auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
+                    if r.status_code != 200:
+                        continue
+                    rj = r.json()
+                    header = rj['result']
+                    prev = header['previousblockhash']
+                    hash = header['hash']
                     blocks_to_add.append(hash)
-            # walk down db chain until node height matches
-            while blocks[i].height > height:
-                # deactivate the block here
-                blocks[i].active = False
-                blocks[i].save()
 
-                # increment
-                i += 1
-            # now DB and node are at same height, walk backwards through both to find common ancestor
-            deactivated = 0
-            while blocks[i].hash != hash:
-                # deactivate the block here
-                blocks[i].active = False
-                blocks[i].save()
-                deactivated += 1
+                # at common ancestor
+                # now add new blocks
+                prev_block = blocks[i]
+                for hash in blocks_to_add[::-1]:
+                    block = Block(hash=hash, height=prev_block.height+1, node=node, active=True, prev=prev_block)
+                    block.save()
+                    node.best_block_hash = block.hash
+                    node.best_block_height = block.height
+                    node.prev_block_hash = prev_block.hash
+                    prev_block = block
 
-                # increment
-                i += 1
-
-                # get block from node
-                r = requests.post(url, data='{"method": "getblockheader", "params": ["' + prev + '"] }',
-                          auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
-                if r.status_code != 200:
-                    continue
-                rj = r.json()
-                header = rj['result']
-                prev = header['previousblockhash']
-                hash = header['hash']
-                blocks_to_add.append(hash)
-
-            # at common ancestor
-            # now add new blocks
-            prev_block = blocks[i]
-            for hash in blocks_to_add[::-1]:
-                block = Block(hash=hash, height=prev_block.height+1, node=node, active=True, prev=prev_block)
-                block.save()
-                node.best_block_hash = block.hash
-                node.best_block_height = block.height
-                node.prev_block_hash = prev_block.hash
-                prev_block = block
-
-            # update node's tip and if it has reorged
-            node.has_reorged = node.has_reorged or deactivated > 2 # only reorged if reorg was greater than 2 blocks
-            node.save()
+                # update node's tip and if it has reorged
+                node.has_reorged = node.has_reorged or deactivated > 2 # only reorged if reorg was greater than 2 blocks
+                node.save()
+        except:
+            continue
 
     # now that nodes are updated, check for chain splits
     nodes = Node.objects.all()
@@ -121,6 +126,11 @@ def update_nodes():
     no_split = True
     for node in nodes:
         blockchain = Block.objects.all().filter(node=node, active=True).order_by("-height")
+
+        # skip if there is no blockchain for some reason
+        if blockchain.count() == 0:
+            continue
+
         for cmp_node in nodes:
             # don't compare to self
             if node == cmp_node:
@@ -137,6 +147,11 @@ def update_nodes():
             it = 0
             diverged = 0
             cmp_blockchain = Block.objects.all().filter(node=cmp_node, active=True).order_by("-height")
+
+            # skip if there is no blockchain for some reason
+            if cmp_blockchain == 0:
+                continue
+
             # get these to matching heights
             while cmp_blockchain[cmp_it].height > blockchain[it].height and diverged <= 6:
                 cmp_it += 1
