@@ -60,5 +60,29 @@
         {% endfor %}
         </tr>
     </table>
+    <div align="center">
+        <h3>About This Website</h3>
+        <p>
+            <b>What is this website?</b> This website is for warning users if the Bitcoin blockchain has experienced a
+            chain split due to the various fork proposals such as Segwit2x and BIP 148 UASF. If a chain split is detected,
+            there will be
+            a red warning banner at the top of the page stating that a chain split has been detected. Once a chain split
+            has been detected, the status for each node will update with the block height of the most recent split from
+            other nodes and the hash of the block at that height. The site will also warn if a node has fallen behind one
+            of the other nodes and has not split onto a different chain from other node. It will also warn if one of the
+            nodes has recently experienced a blockchain reorganization.
+        </p>
+        <p>
+            <b>How does this website work?</b> The website runs a node for each of the nodes displayed above. A process
+            run every ten seconds to check to see if each of the nodes has diverged from each other. To avoid triggering
+            the warning in cases of orphaned blocks and latency, the site will only warn if a chain split of more than two
+            blocks is detected.
+        </p>
+        <p>
+            <b>How can I contribute to the website?</b> The source code for this website is available on
+            <a href="https://github.com/achow101/forkmon">github</a>. It is written in python and uses Django. Pull requests
+            are welcome. You can also donate to the developer at 1AQx99s7q1wVinbgXbA48BaZQVWpHe5gYM
+        </p>
+    </div>
 </body>
 </html>
