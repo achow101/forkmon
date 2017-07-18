@@ -31,7 +31,7 @@
                     Has not forked but is behind other nodes: {% if n.is_behind %}<span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>
                 {% if n.highest_divergence > 0 %}
                     <li class="list-group-item">Most Recent Forking Block Hash: <small>{{ n.highest_diverged_hash }}</small></li>
-                    <li class="list-group-item">Most Recent Forking Block Height: <small>{{ n.highest_divergence }}</small></li>
+                    <li class="list-group-item">Most Recent Forking Block Height: {{ n.highest_divergence }}</li>
                 {% endif %}
             </ul>
         </div>
@@ -57,8 +57,10 @@
         </p>
         <p class="lead">
             <b>How can I contribute to the website?</b> The source code for this website is available on
-            <a href="https://github.com/achow101/forkmon">github</a>. It is written in python and uses Django. Pull requests
-            are welcome. You can also donate to the developer at 1AQx99s7q1wVinbgXbA48BaZQVWpHe5gYM
+            <a href="https://github.com/achow101/forkmon">github</a>. It is written in python and uses Django for the backend.
+            Styling is done with <a href="https://getbootstrap.com">Bootstrap</a>. Pull requests
+            are welcome. You can also donate to the developer at <b><a href="bitcoin:1AQx99s7q1wVinbgXbA48BaZQVWpHe5gYM">
+            1AQx99s7q1wVinbgXbA48BaZQVWpHe5gYM </a></b>
         </p>
     </div>
 </body>
