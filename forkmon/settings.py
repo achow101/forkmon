@@ -29,6 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'forkmon.us-east-1.elasticbeanstalk.com',
     'www.btcforkmonitor.info',
+    '127.0.0.1',
+    'localhost',
 ]
 
 
