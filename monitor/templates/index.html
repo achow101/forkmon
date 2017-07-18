@@ -10,14 +10,23 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 </head>
 <body>
-    {% if chain_split %}
+    {% if is_forked %}
         <div style="font-size: x-large" align="center" class="alert alert-danger my-2 mx-2">
         WARNING: A CHAIN SPLIT HAS BEEN DETECTED.
+        </div>
+    {% elif has_forked %}
+        <div style="font-size: x-large" align="center" class="alert alert-warning my-2 mx-2">
+        WARNING: A CHAIN SPLIT WAS DETECTED BUT HAS BEEN RE-ORGED.
+        </div>
+    {% else %}
+        <div style="font-size: x-large" align="center" class="alert alert-success my-2 mx-2">
+        NO CHAIN SPLIT DETECTED.
         </div>
     {% endif %}
     <div class="card-deck my-3 mx-2">
     {% for n in nodes %}
-        <div class="card {% if chain_split %}card-danger{% else %}card-success{% endif %} w-25">
+        <div class="card {% if is_forked %}card-danger{% elif not n.is_up %}card-info{% elif has_forked %}card-warning
+            {% else %}card-success{% endif %} w-25">
             <div class="card-header text-white">
                 Node: {{ n.name }}
             </div>
@@ -26,14 +35,20 @@
                 <li class="list-group-item ">Best Block Hash: <small>{{ n.best_block_hash }}</small></li>
                 <li class="list-group-item">Previous Block Hash: <small>{{ n.prev_block_hash }}</small></li>
                 <li class="list-group-item">
-                    Has Experienced a Blockchain Reorganization: {% if n.has_reorged %}<span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>
+                    Has Experienced a Blockchain Reorganization: {% if n.has_reorged %}
+                    <span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>
                 <li class="list-group-item">
-                    Has not forked but is behind other nodes: {% if n.is_behind %}<span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>
+                    Has not forked but is behind other nodes: {% if n.is_behind %}
+                    <span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>
                 {% if n.highest_divergence > 0 %}
                     <li class="list-group-item">Most Recent Forking Block Hash: <small>{{ n.highest_diverged_hash }}</small></li>
                     <li class="list-group-item">Most Recent Forking Block Height: {{ n.highest_divergence }}</li>
                 {% endif %}
             </ul>
+        <div class="card-footer">
+            <span class="text-white">Node</span> <span class="{% if n.is_up %}text-white{% else %}text-warning{% endif %}">
+                {% if n.is_up %}Operational{% else %}Down{% endif %}</span>
+        </div>
         </div>
     {% endfor %}
     </div>

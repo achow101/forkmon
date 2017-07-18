@@ -44,8 +44,6 @@ def update_nodes():
                 node.best_block_hash = hash
                 node.best_block_height = height
                 node.prev_block_hash = prev
-                node.save()
-                continue
             # different block
             # next block: prev hash matches
             elif prev == blocks[0].hash:
@@ -54,7 +52,6 @@ def update_nodes():
                 node.best_block_hash = hash
                 node.best_block_height = height
                 node.prev_block_hash = prev
-                node.save()
             # otherwise need to reorg
             else:
                 # node's height is ahead
@@ -116,8 +113,14 @@ def update_nodes():
 
                 # update node's tip and if it has reorged
                 node.has_reorged = node.has_reorged or deactivated > 2 # only reorged if reorg was greater than 2 blocks
-                node.save()
+
+            # mark as up and save
+            node.is_up = True
+            node.save()
         except:
+            # mark that node is currently down
+            node.is_up = False
+            node.save()
             continue
 
     # now that nodes are updated, check for chain splits
@@ -138,8 +141,8 @@ def update_nodes():
 
             # check top block is same
             if node.best_block_hash == cmp_node.best_block_hash:
+                node.is_behind = False
                 continue
-            no_split = False
 
             # top block hashes are not the same. find if the divergence is within the past 6 blocks
             # once the block is found, it will be saved until a new divergence is found
@@ -175,20 +178,28 @@ def update_nodes():
 
             # split detected, mark as such
             if diverged > 1:
-                has_split = True
-                node.is_behind = False
                 if it - 1 < 0:
                     node.is_behind = True
+                else:
+                    node.is_behind = False
+
+                if not node.is_up:
+                    no_split = True
+                    has_split = has_split or False
+                else:
+                    has_split = True
+                    no_split = False
                 node.save()
 
     # Update fork state if split detected
     if has_split:
         state = ForkState.objects.all()[0]
         state.has_forked = True
+        state.is_currently_forked = True
         state.save()
     if no_split:
         state = ForkState.objects.all()[0]
-        state.has_forked = False
+        state.is_currently_forked = False
         state.save()
 
         # reset node stuff

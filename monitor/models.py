@@ -2,6 +2,7 @@ from django.db import models
 
 class ForkState(models.Model):
     has_forked = models.BooleanField(default=False)
+    is_currently_forked = models.BooleanField(default=False)
 
     def __str__(self):
         return "Has Forked: " + str(self.has_forked)
@@ -14,6 +15,7 @@ class Node(models.Model):
     prev_block_hash = models.CharField(max_length=64)
     has_reorged = models.BooleanField(default=False)
     is_behind = models.BooleanField(default=False)
+    is_up = models.BooleanField(default=True)
     highest_divergence = models.IntegerField(default=0)
     highest_diverged_hash = models.CharField(max_length=64, blank=True)
 

@@ -5,10 +5,11 @@ from .models import *
 def index(request):
     if request.method == 'GET':
         # chainsplit bool
-        chain_split = ForkState.objects.all()[0].has_forked
+        is_forked = ForkState.objects.all()[0].is_currently_forked
+        has_forked = ForkState.objects.all()[0].has_forked
 
         # node info
         nodes = Node.objects.all()
 
-        context = {'chain_split':chain_split, 'nodes':nodes}
+        context = {'is_forked':is_forked, 'has_forked':has_forked, 'nodes':nodes}
         return render(request, 'index.html', context)
