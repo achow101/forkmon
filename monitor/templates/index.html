@@ -29,10 +29,10 @@
         NO CHAIN SPLIT DETECTED.
         </div>
     {% endif %}
-    <div class="card-deck my-3 mx-2">
+    <div class="card-deck my-2 mx-2">
     {% for n in nodes %}
         <div class="card {% if is_forked %}card-danger{% elif not n.is_up %}card-info{% elif has_forked %}card-warning
-            {% else %}card-success{% endif %} w-25">
+            {% else %}card-success{% endif %} my-2" style="width: 20rem;">
             <div class="card-header text-white">
                 Node: {{ n.name }}
             </div>
