@@ -5,7 +5,7 @@ class ForkState(models.Model):
     is_currently_forked = models.BooleanField(default=False)
 
     def __str__(self):
-        return "Has Forked: " + str(self.has_forked)
+        return "Has Forked: " + str(self.has_forked) + "Is Currently Forked: " + str(self.is_currently_forked)
 
 class Node(models.Model):
     name = models.CharField(max_length=100)
@@ -31,4 +31,4 @@ class Block(models.Model):
     node = models.ForeignKey(Node)
 
     def __str__(self):
-        return str(self.hash) + " at " + str(self.node)
+        return str(self.hash) + "at height " + str(self.height) + " on node " + str(self.node)

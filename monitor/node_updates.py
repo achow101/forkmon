@@ -71,23 +71,29 @@ def update_nodes():
                     if height > blocks[i].height:
                         blocks_to_add.append(hash)
                 # walk down db chain until node height matches
+                deactivated = 0
                 while blocks[i].height > height:
                     # deactivate the block here
-                    blocks[i].active = False
-                    blocks[i].save()
-
-                    # increment
-                    i += 1
-                # now DB and node are at same height, walk backwards through both to find common ancestor
-                deactivated = 0
-                while blocks[i].hash != hash:
-                    # deactivate the block here
-                    blocks[i].active = False
-                    blocks[i].save()
+                    block = blocks[i]
+                    block.active = False
+                    block.save()
                     deactivated += 1
 
                     # increment
                     i += 1
+                # now DB and node are at same height, walk backwards through both to find common ancestor
+                while blocks[i].hash != hash:
+                    # deactivate the block here
+                    block = blocks[i]
+                    block.active = False
+                    block.save()
+                    deactivated += 1
+
+                    # increment
+                    i += 1
+
+                    # Add this hash to add
+                    blocks_to_add.append(hash)
 
                     # get block from node
                     r = requests.post(url, data='{"method": "getblockheader", "params": ["' + prev + '"] }',
@@ -98,7 +104,6 @@ def update_nodes():
                     header = rj['result']
                     prev = header['previousblockhash']
                     hash = header['hash']
-                    blocks_to_add.append(hash)
 
                 # at common ancestor
                 # now add new blocks
@@ -130,8 +135,8 @@ def update_nodes():
     for node in nodes:
         blockchain = Block.objects.all().filter(node=node, active=True).order_by("-height")
 
-        # skip if there is no blockchain for some reason
-        if blockchain.count() == 0:
+        # skip if there is no blockchain for some reason or the node is down
+        if blockchain.count() == 0 or not node.is_up:
             continue
 
         for cmp_node in nodes:
@@ -151,9 +156,10 @@ def update_nodes():
             diverged = 0
             cmp_blockchain = Block.objects.all().filter(node=cmp_node, active=True).order_by("-height")
 
-            # skip if there is no blockchain for some reason
-            if cmp_blockchain == 0:
+            # skip if there is no blockchain for some reason or if the node is down
+            if cmp_blockchain == 0 or not cmp_node.is_up:
                 continue
+            no_split = False
 
             # get these to matching heights
             while cmp_blockchain[cmp_it].height > blockchain[it].height and diverged <= 6:
@@ -164,7 +170,7 @@ def update_nodes():
                 diverged += 1
 
             # walk down both chains until common ancestor found
-            while blockchain[it].hash != cmp_blockchain[cmp_it].hash and diverged <= 6:
+            while blockchain[it].hash != cmp_blockchain[cmp_it].hash and diverged <= 15:
                 cmp_it += 1
                 it += 1
                 diverged += 1
@@ -178,17 +184,11 @@ def update_nodes():
 
             # split detected, mark as such
             if diverged > 1:
+                has_split = True
                 if it - 1 < 0:
                     node.is_behind = True
                 else:
                     node.is_behind = False
-
-                if not node.is_up:
-                    no_split = True
-                    has_split = has_split or False
-                else:
-                    has_split = True
-                    no_split = False
                 node.save()
 
     # Update fork state if split detected
