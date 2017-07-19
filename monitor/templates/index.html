@@ -14,6 +14,7 @@
             word-wrap: break-word;
         }
     </style>
+    {% load stats_tags %}
 </head>
 <body>
     {% if is_forked %}
@@ -65,7 +66,13 @@
         </div>
         <ul class="list-group">
             {% for f in forks %}
-                <li class="list-group-item">{{ f.name }}: {{ f.count }}/{{ f.elapsed }} ({{ f.threshold }}/{{ f.period }} Threshold)</li>
+                <li class="list-group-item">{{ f.name }}: {{ f.count }}/{{ f.elapsed }}
+                    {% if f.elapsed >= 50 %}
+                    ({{ f.count|getpercent:f.elapsed}} signalling)
+                    {% else %}
+                    (Percentage unavailable)
+                    {% endif %}
+                     ({{ f.threshold }}/{{ f.period }} Threshold)</li>
             {% endfor %}
             <li class="list-group-item">BIP 148 (UASF): Activates when Median Time is August 1, 2017, 0:00 a.m. UTC or later</li>
             <li class="list-group-item">UAHF: Activates when Median Time is August 1, 2017, 12:20 p.m. UTC or later</li>
