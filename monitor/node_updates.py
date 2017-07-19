@@ -42,6 +42,13 @@ def update_nodes():
             # check that this node's current top block is this block or the previous block
             blocks = Block.objects.all().filter(node=node, active=True).order_by("-height")
 
+            # If there is no blockchain, add the first block
+            if blocks.count() == 0:
+                Block(hash=hash, height=height, node=node).save()
+                node.best_block_hash = hash
+                node.best_block_height = height
+                node.prev_block_hash = prev
+
             # same block
             if blocks[0].hash == hash:
                 node.best_block_hash = hash
