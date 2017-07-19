@@ -43,14 +43,14 @@ def update_nodes():
             blocks = Block.objects.all().filter(node=node, active=True).order_by("-height")
 
             # If there is no blockchain, add the first block
-            if blocks.count() == 0:
+            if not blocks:
                 Block(hash=hash, height=height, node=node).save()
                 node.best_block_hash = hash
                 node.best_block_height = height
                 node.prev_block_hash = prev
 
             # same block
-            if blocks[0].hash == hash:
+            elif blocks[0].hash == hash:
                 node.best_block_hash = hash
                 node.best_block_height = height
                 node.prev_block_hash = prev
@@ -169,7 +169,8 @@ def update_nodes():
             # mark as up and save
             node.is_up = True
             node.save()
-        except:
+        except Exception as e:
+            print(e)
             # mark that node is currently down
             node.is_up = False
             node.save()
@@ -183,7 +184,7 @@ def update_nodes():
         blockchain = Block.objects.all().filter(node=node, active=True).order_by("-height")
 
         # skip if there is no blockchain for some reason or the node is down
-        if blockchain.count() == 0 or not node.is_up:
+        if not blockchain or not node.is_up:
             continue
 
         for cmp_node in nodes:
@@ -204,7 +205,7 @@ def update_nodes():
             cmp_blockchain = Block.objects.all().filter(node=cmp_node, active=True).order_by("-height")
 
             # skip if there is no blockchain for some reason or if the node is down
-            if cmp_blockchain == 0 or not cmp_node.is_up:
+            if not cmp_blockchain or not cmp_node.is_up:
                 continue
             no_split = False
 
@@ -239,6 +240,9 @@ def update_nodes():
                 node.save()
 
     # Update fork state if split detected
+    states = ForkState.objects.all()
+    if not states:
+        ForkState().save()
     if has_split:
         state = ForkState.objects.all()[0]
         state.has_forked = True
