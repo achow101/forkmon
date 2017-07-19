@@ -18,6 +18,7 @@ class Node(models.Model):
     is_up = models.BooleanField(default=True)
     highest_divergence = models.IntegerField(default=0)
     highest_diverged_hash = models.CharField(max_length=64, blank=True)
+    stats_node = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.name)
@@ -32,3 +33,15 @@ class Block(models.Model):
 
     def __str__(self):
         return str(self.hash) + "at height " + str(self.height) + " on node " + str(self.node)
+
+class BIP9Fork(models.Model):
+    name = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    count = models.IntegerField()
+    elapsed = models.IntegerField()
+    period = models.IntegerField()
+    threshold = models.IntegerField()
+
+    def __str__(self):
+        return self.name + " " + self.state + " " + str(self.count) + "/" + str(self.elapsed) \
+        + " (" + str(self.threshold) + "/" + str(self.period) + " required)"

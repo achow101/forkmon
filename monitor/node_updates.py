@@ -119,6 +119,43 @@ def update_nodes():
                 # update node's tip and if it has reorged
                 node.has_reorged = node.has_reorged or deactivated > 2 # only reorged if reorg was greater than 2 blocks
 
+            # Gather stats from stats node
+            if node.stats_node:
+                r = requests.post(url, data='{"method": "getblockchaininfo", "params": [] }',
+                                  auth=(os.environ['RPC_USER'], os.environ['RPC_PASSWORD']))
+                if r.status_code != 200:
+                    continue
+                rj = r.json()
+                forks = rj['result']['bip9_softforks']
+                for name, info in forks.items():
+                    # Get status
+                    state = info['status']
+
+                    # skip if state is active
+                    if state == "active" or state == 'defined':
+                        continue
+
+                    # Get statistics
+                    period = info['statistics']['period']
+                    threshold = info['statistics']['threshold']
+                    elapsed = info['statistics']['elapsed']
+                    count = info['statistics']['count']
+
+                    # Get the fork from the database
+                    db_forks = BIP9Fork.objects.all().filter(name=name)
+
+                    # If the fork does not exist, make it
+                    if db_forks.count() == 0:
+                        BIP9Fork(name=name, state=state, period=period, threshold=threshold, elapsed=elapsed, count=count).save()
+                    # otherwise update it
+                    else:
+                        fork = db_forks[0]
+                        fork.elapsed = elapsed
+                        fork.count = count
+                        fork.state = state
+                        fork.save()
+
+
             # mark as up and save
             node.is_up = True
             node.save()

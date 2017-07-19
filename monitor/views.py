@@ -11,5 +11,8 @@ def index(request):
         # node info
         nodes = Node.objects.all()
 
-        context = {'is_forked':is_forked, 'has_forked':has_forked, 'nodes':nodes}
+        # soft fork stats
+        forks = BIP9Fork.objects.all()
+
+        context = {'is_forked':is_forked, 'has_forked':has_forked, 'nodes':nodes, 'forks':forks}
         return render(request, 'index.html', context)

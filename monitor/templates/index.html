@@ -51,12 +51,22 @@
                     <li class="list-group-item">Most Recent Forking Block Height: {{ n.highest_divergence }}</li>
                 {% endif %}
             </ul>
-        <div class="card-footer">
-            <span class="text-white">Node</span> <span class="{% if n.is_up %}text-white{% else %}text-warning{% endif %}">
-                {% if n.is_up %}Operational{% else %}Down{% endif %}</span>
-        </div>
+            <div class="card-footer">
+                <span class="text-white">Node</span> <span class="{% if n.is_up %}text-white{% else %}text-warning{% endif %}">
+                    {% if n.is_up %}Operational{% else %}Down{% endif %}</span>
+            </div>
         </div>
     {% endfor %}
+    </div>
+    <div class="card mx-auto w-50">
+        <div class="card-header">
+            Soft fork information
+        </div>
+        <ul class="list-group">
+            {% for f in forks %}
+                <li class="list-group-item">{{ f.name }}: {{ f.count }}/{{ f.elapsed }} ({{ f.threshold }}/{{ f.period }} Threshold)</li>
+            {% endfor %}
+        </ul>
     </div>
     <div class="w-75 text-center pt-5 mx-auto">
         <h3>About This Website</h3>

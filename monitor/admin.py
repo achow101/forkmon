@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(ForkState)
 admin.site.register(Block)
 admin.site.register(Node)
+admin.site.register(BIP9Fork)
