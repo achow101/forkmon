@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.utils import timezone
 
 import requests
 import os
@@ -35,6 +35,9 @@ def update_nodes():
             prev = header['previousblockhash']
             height = header['height']
             hash = header['hash']
+
+            # Update node's MTP
+            node.mtp = datetime.datetime.fromtimestamp(header['mediantime'], timezone.utc)
 
             # check that this node's current top block is this block or the previous block
             blocks = Block.objects.all().filter(node=node, active=True).order_by("-height")

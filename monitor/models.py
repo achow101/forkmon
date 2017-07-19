@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class ForkState(models.Model):
     has_forked = models.BooleanField(default=False)
@@ -19,6 +20,7 @@ class Node(models.Model):
     highest_divergence = models.IntegerField(default=0)
     highest_diverged_hash = models.CharField(max_length=64, blank=True)
     stats_node = models.BooleanField(default=False)
+    mtp = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return str(self.name)

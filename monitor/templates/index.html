@@ -38,6 +38,7 @@
             </div>
             <ul class="list-group">
                 <li class="list-group-item">Current height: {{ n.best_block_height }}</li>
+                <li class="list-group-item">Current Median Time: {{ n.mtp }} UTC</li>
                 <li class="list-group-item ">Best Block Hash: <small>{{ n.best_block_hash }}</small></li>
                 <li class="list-group-item">Previous Block Hash: <small>{{ n.prev_block_hash }}</small></li>
                 <li class="list-group-item">
@@ -66,6 +67,7 @@
             {% for f in forks %}
                 <li class="list-group-item">{{ f.name }}: {{ f.count }}/{{ f.elapsed }} ({{ f.threshold }}/{{ f.period }} Threshold)</li>
             {% endfor %}
+            <li class="list-group-item">BIP 148 (UASF): Activates when Median Time is August 1, 2017, 0:00 a.m. UTC or later</li>
         </ul>
     </div>
     <div class="w-75 text-center pt-5 mx-auto">
