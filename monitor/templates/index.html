@@ -17,16 +17,18 @@
     {% load stats_tags %}
 </head>
 <body>
+<div class="container-fluid">
+
     {% if is_forked %}
-        <div style="font-size: x-large" align="center" class="alert alert-danger my-2 mx-2">
+        <div style="font-size: x-large" align="center" class="alert alert-danger mt-4 mx-2">
         WARNING: A CHAIN SPLIT HAS BEEN DETECTED.
         </div>
     {% elif has_forked %}
-        <div style="font-size: x-large" align="center" class="alert alert-warning my-2 mx-2">
+        <div style="font-size: x-large" align="center" class="alert alert-warning mt-4 mx-2">
         WARNING: A CHAIN SPLIT WAS DETECTED BUT HAS BEEN RE-ORGED.
         </div>
     {% else %}
-        <div style="font-size: x-large" align="center" class="alert alert-success my-2 mx-2">
+        <div style="font-size: x-large" align="center" class="alert alert-success mt-4 mx-2">
         NO CHAIN SPLIT DETECTED.
         </div>
     {% endif %}
@@ -37,7 +39,7 @@
             <div class="card-header text-white">
                 Node: {{ n.name }}
             </div>
-            <ul class="list-group">
+            <ul class="list-group list-group-flush">
                 <li class="list-group-item">Current height: {{ n.best_block_height }}</li>
                 <li class="list-group-item">Current Median Time: {{ n.mtp }} UTC</li>
                 <li class="list-group-item ">Best Block Hash: <small>{{ n.best_block_hash }}</small></li>
@@ -64,7 +66,7 @@
         <div class="card-header">
             Fork Activation Information
         </div>
-        <ul class="list-group">
+        <ul class="list-group list-group-flush">
             {% for f in forks %}
                 <li class="list-group-item">{{ f.name }}: {{ f.count }}/{{ f.elapsed }}
                     {% if f.elapsed >= 50 %}
@@ -104,5 +106,7 @@
             1AQx99s7q1wVinbgXbA48BaZQVWpHe5gYM </a></b>
         </p>
     </div>
+
+</div>
 </body>
 </html>
