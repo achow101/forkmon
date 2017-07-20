@@ -68,13 +68,13 @@
         </div>
         <ul class="list-group list-group-flush">
             {% for f in forks %}
-                <li class="list-group-item">{{ f.name }}: {{ f.count }}/{{ f.elapsed }}
-                    {% if f.elapsed >= 50 %}
+                <li class="list-group-item">{{ f.name }}: {{ f.state }}
+                    {% if f.state == 'started' %}
+                    - {{ f.count }}/{{ f.elapsed }}
                     ({{ f.count|getpercent:f.elapsed}} signalling)
-                    {% else %}
-                    (Percentage unavailable)
+                    ({{ f.threshold }}/{{ f.period }} Threshold)
                     {% endif %}
-                     ({{ f.threshold }}/{{ f.period }} Threshold)</li>
+                </li>
             {% endfor %}
             <li class="list-group-item">BIP 148 (UASF): Activates when Median Time is August 1, 2017, 0:00 a.m. UTC or later</li>
             <li class="list-group-item">UAHF: Activates when Median Time is August 1, 2017, 12:20 p.m. UTC or later</li>

@@ -141,28 +141,34 @@ def update_nodes():
                     # Get status
                     state = info['status']
 
-                    # skip if state is active
-                    if state == "active" or state == 'defined':
-                        continue
-
-                    # Get statistics
-                    period = info['statistics']['period']
-                    threshold = info['statistics']['threshold']
-                    elapsed = info['statistics']['elapsed']
-                    count = info['statistics']['count']
-
                     # Get the fork from the database
                     db_forks = BIP9Fork.objects.all().filter(name=name)
 
-                    # If the fork does not exist, make it
-                    if db_forks.count() == 0:
-                        BIP9Fork(name=name, state=state, period=period, threshold=threshold, elapsed=elapsed, count=count).save()
-                    # otherwise update it
+                    # skip if state is active or defined and was not already in the db
+                    if (state == "active" or state == 'defined') and not db_forks:
+                        continue
+
+                    # Only get stats if started
+                    if state == 'started':
+                        # Get statistics
+                        period = info['statistics']['period']
+                        threshold = info['statistics']['threshold']
+                        elapsed = info['statistics']['elapsed']
+                        count = info['statistics']['count']
+
+                        # If the fork does not exist, make it
+                        if not db_forks:
+                            BIP9Fork(name=name, state=state, period=period, threshold=threshold, elapsed=elapsed, count=count).save()
+                        # otherwise update it
+                        else:
+                            fork = db_forks[0]
+                            fork.elapsed = elapsed
+                            fork.count = count
+                            fork.state = state
+                            fork.save()
                     else:
                         fork = db_forks[0]
-                        fork.elapsed = elapsed
-                        fork.count = count
-                        fork.state = state
+                        fork.state = state;
                         fork.save()
 
 
