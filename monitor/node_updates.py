@@ -137,6 +137,7 @@ def update_nodes():
                     continue
                 rj = r.json()
                 forks = rj['result']['bip9_softforks']
+                current = rj['result']['blocks']
                 for name, info in forks.items():
                     # Get status
                     state = info['status']
@@ -165,10 +166,14 @@ def update_nodes():
                             fork.elapsed = elapsed
                             fork.count = count
                             fork.state = state
+                            fork.current = current
+                            fork.since = info['since']
                             fork.save()
                     else:
                         fork = db_forks[0]
-                        fork.state = state;
+                        fork.state = state
+                        fork.since = info['since']
+                        fork.current = current
                         fork.save()
 
 

@@ -68,11 +68,14 @@
         </div>
         <ul class="list-group list-group-flush">
             {% for f in forks %}
-                <li class="list-group-item">{{ f.name }}: {{ f.state }}
+                <li class="list-group-item">{{ f.name }}: {{ f.state }} since block {{ f.since }};
                     {% if f.state == 'started' %}
-                    - {{ f.count }}/{{ f.elapsed }}
+                    {{ f.count }}/{{ f.elapsed }}
                     ({{ f.count|getpercent:f.elapsed}} signalling)
                     ({{ f.threshold }}/{{ f.period }} Threshold)
+                    {% elif f.state == 'locked_in' %}
+                    Activates in {{ f.since|add:f.period|subtract:f.current }}
+                    blocks (Block {{ f.since|add:f.threshold }})
                     {% endif %}
                 </li>
             {% endfor %}
