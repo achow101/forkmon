@@ -1,6 +1,6 @@
 # Bitcoin Fork Monitor Website
 
-This repo contains the source code for the https://btcforkmonitor.info
+This repo contains the source code for the https://www.btcforkmonitor.info
 
 ## Building and testing locally
 
