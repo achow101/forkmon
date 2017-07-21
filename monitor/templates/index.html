@@ -75,7 +75,7 @@
                     ({{ f.threshold }}/{{ f.period }} Threshold)
                     {% elif f.state == 'locked_in' %}
                     Activates in {{ f.since|add:f.period|subtract:f.current }}
-                    blocks (Block {{ f.since|add:f.threshold }})
+                    blocks (Block {{ f.since|add:f.period }})
                     {% endif %}
                 </li>
             {% endfor %}
