@@ -1,0 +1,14 @@
+ERROR 2017-07-23 06:10:12,669 exception 17638 140004774471424 Internal Server Error: /
+Traceback (most recent call last):
+  File "/home/local/ZOHOCORP/siva-2356/languages/python-3.5.2/lib/python3.5/site-packages/django/core/handlers/exception.py", line 41, in inner
+    response = get_response(request)
+  File "/home/local/ZOHOCORP/siva-2356/languages/python-3.5.2/lib/python3.5/site-packages/django/core/handlers/base.py", line 187, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/local/ZOHOCORP/siva-2356/languages/python-3.5.2/lib/python3.5/site-packages/django/core/handlers/base.py", line 185, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/local/ZOHOCORP/siva-2356/PycharmProjects/forkmon/monitor/views.py", line 8, in index
+    is_forked = ForkState.objects.all()[0].is_currently_forked
+  File "/home/local/ZOHOCORP/siva-2356/languages/python-3.5.2/lib/python3.5/site-packages/django/db/models/query.py", line 289, in __getitem__
+    return list(qs)[0]
+IndexError: list index out of range
+ERROR 2017-07-23 06:10:12,730 basehttp 17638 140004774471424 "GET / HTTP/1.1" 500 77318
