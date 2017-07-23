@@ -80,8 +80,9 @@
                     {% endif %}
                 </li>
             {% endfor %}
-            <li class="list-group-item">BIP 148 (UASF): Activates when Median Time is August 1, 2017, 0:00 a.m. UTC or later</li>
-            <li class="list-group-item">UAHF: Activates when Median Time is August 1, 2017, 12:20 p.m. UTC or later</li>
+            {% for f in mtpforks %}
+                <li class="list-group-item"> {{ f.name }}: Activates when Median Time is {{ f.activation_time }} UTC or later</li>
+            {% endfor %}
         </ul>
     </div>
     <div class="w-75 text-center pt-5 mx-auto">
