@@ -63,7 +63,12 @@
         </div>
     {% endfor %}
     </div>
-    <div class="card mx-auto w-50">
+    {% if is_forked %}
+        <div class="alert alert-warning" align="center">
+            A CHAIN SPLIT HAS BEEN DETECTED. THE FORK ACTIVATION INFORMATION MAY BE INACCURATE.
+        </div>
+    {% endif %}
+    <div class="card mx-auto w-50 {% if is_forked %}card-warning{% endif %}">
         <div class="card-header">
             Fork Activation Information
         </div>
