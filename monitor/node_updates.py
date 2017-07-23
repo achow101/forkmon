@@ -1,3 +1,5 @@
+import logging
+
 from django.utils import timezone
 
 import requests
@@ -6,11 +8,14 @@ import datetime
 
 from .models import *
 
+logger = logging.getLogger("forkmon.task")
+
 def update_nodes():
 
     # update in-db chain for each node
     nodes = Node.objects.all()
-    print("Beginning update at " + str(datetime.datetime.now()))
+    #print("Beginning update at " + str(datetime.datetime.now()))
+    logger.info("Beginning update at " + str(datetime.datetime.now()))
     for node in nodes:
         # try except statements for catching any errors that come from the requests. if there is an error, just skip
         # the node and continue
@@ -269,4 +274,5 @@ def update_nodes():
             node.highest_divergence = 0
             node.save()
 
-    print("Updated Completed at " + str(datetime.datetime.now()))
+    #print("Updated Completed at " + str(datetime.datetime.now()))
+    logger.info("Updated Completed at " + str(datetime.datetime.now()))
