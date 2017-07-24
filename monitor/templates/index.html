@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="refresh" content="60">
 
     <title>Bitcoin Fork Monitor</title>
 
@@ -62,22 +63,31 @@
         </div>
     {% endfor %}
     </div>
-    <div class="card mx-auto w-50">
+    {% if is_forked %}
+        <div class="alert alert-warning" align="center">
+            A CHAIN SPLIT HAS BEEN DETECTED. THE FORK ACTIVATION INFORMATION MAY BE INACCURATE.
+        </div>
+    {% endif %}
+    <div class="card mx-auto w-50 {% if is_forked %}card-warning{% endif %}">
         <div class="card-header">
             Fork Activation Information
         </div>
         <ul class="list-group list-group-flush">
             {% for f in forks %}
-                <li class="list-group-item">{{ f.name }}: {{ f.state }}
+                <li class="list-group-item">{{ f.name }}: {{ f.state }} since block {{ f.since }};
                     {% if f.state == 'started' %}
-                    - {{ f.count }}/{{ f.elapsed }}
+                    {{ f.count }}/{{ f.elapsed }}
                     ({{ f.count|getpercent:f.elapsed}} signalling)
                     ({{ f.threshold }}/{{ f.period }} Threshold)
+                    {% elif f.state == 'locked_in' %}
+                    Activates in {{ f.since|add:f.period|subtract:f.current }}
+                    blocks (Block {{ f.since|add:f.period }})
                     {% endif %}
                 </li>
             {% endfor %}
-            <li class="list-group-item">BIP 148 (UASF): Activates when Median Time is August 1, 2017, 0:00 a.m. UTC or later</li>
-            <li class="list-group-item">UAHF: Activates when Median Time is August 1, 2017, 12:20 p.m. UTC or later</li>
+            {% for f in mtpforks %}
+                <li class="list-group-item"> {{ f.name }}: Activates when Median Time is {{ f.activation_time }} UTC or later</li>
+            {% endfor %}
         </ul>
     </div>
     <div class="w-75 text-center pt-5 mx-auto">
