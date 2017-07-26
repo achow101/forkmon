@@ -34,7 +34,7 @@ class Block(models.Model):
     node = models.ForeignKey(Node)
 
     def __str__(self):
-        return str(self.hash) + "at height " + str(self.height) + " on node " + str(self.node)
+        return str(self.hash) + " at height " + str(self.height) + " on node " + str(self.node)
 
 class BIP9Fork(models.Model):
     name = models.CharField(max_length=100)
@@ -49,3 +49,11 @@ class BIP9Fork(models.Model):
     def __str__(self):
         return self.name + " " + self.state + " " + str(self.count) + "/" + str(self.elapsed) \
         + " (" + str(self.threshold) + "/" + str(self.period) + " required)"
+
+# Forks that activate at a median time
+class MTFork(models.Model):
+    name = models.CharField(max_length=100)
+    activation_time = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.name
