@@ -57,3 +57,10 @@ class MTFork(models.Model):
 
     def __str__(self):
         return self.name
+
+class UpdateLock(models.Model):
+    in_use = models.BooleanField(default=False)
+    version = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "Database in use: " + str(self.in_use)

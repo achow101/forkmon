@@ -1,6 +1,7 @@
 import logging
 
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 
 import requests
 import os
@@ -11,11 +12,28 @@ from .models import *
 logger = logging.getLogger("forkmon.task")
 
 def update_nodes():
+    update_id = get_random_string(length=10)
+    logger.info("Update ID: " + update_id + " - Beginning update at " + str(datetime.datetime.now()))
+
+    # Retrieve the database lock
+    lock = UpdateLock.objects.all().first()
+    lock_version = lock.version
+
+    # Check that the lock is currently not in use
+    if lock.in_use:
+        logger.info("Update ID: " + update_id + " - Database in use, exiting at " + str(datetime.datetime.now()))
+        return
+
+    # Update the lock
+    locked = UpdateLock.objects.filter(version=lock_version).update(in_use = True, version=lock_version + 1)
+
+    # exit if 0 objects were updated as that means someone was locking at the same time
+    if locked == 0:
+        logger.info("Update ID: " + update_id + " - Database lock version was updated by another process, exiting at " + str(datetime.datetime.now()))
+        return
 
     # update in-db chain for each node
     nodes = Node.objects.all()
-    #print("Beginning update at " + str(datetime.datetime.now()))
-    logger.info("Beginning update at " + str(datetime.datetime.now()))
     for node in nodes:
         # try except statements for catching any errors that come from the requests. if there is an error, just skip
         # the node and continue
@@ -274,5 +292,7 @@ def update_nodes():
             node.highest_divergence = 0
             node.save()
 
-    #print("Updated Completed at " + str(datetime.datetime.now()))
-    logger.info("Updated Completed at " + str(datetime.datetime.now()))
+    # release database lock
+    UpdateLock.objects.filter(version=lock_version + 1).update(in_use = False, version=lock_version + 2)
+
+    logger.info("Update ID: " + update_id + " - Completed at " + str(datetime.datetime.now()))
