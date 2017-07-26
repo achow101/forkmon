@@ -1,25 +1,25 @@
 diff --git a/forkmon/settings.py b/forkmon/settings.py
-index e47b154..97d05ea 100644
+index 557b971..769e135 100644
 --- a/forkmon/settings.py
 +++ b/forkmon/settings.py
 @@ -20,11 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
  # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
-
+ 
  # SECURITY WARNING: keep the secret key used in production secret!
 -SECRET_KEY = 'e3y=fqa9d!d04_*46=64n$x1!m5#_h074#0u#pttn*nkud!em-'
 -#SECRET_KEY = os.environ['SECRET_KEY']
 +#SECRET_KEY = 'e3y=fqa9d!d04_*46=64n$x1!m5#_h074#0u#pttn*nkud!em-'
 +SECRET_KEY = os.environ['SECRET_KEY']
-
+ 
  # SECURITY WARNING: don't run with debug turned on in production!
 -DEBUG = True
 +DEBUG = False
-
+ 
  ALLOWED_HOSTS = [
      'forkmon.us-east-1.elasticbeanstalk.com',
-@@ -136,13 +136,13 @@ STATIC_URL = '/static/'
+@@ -136,16 +136,16 @@ STATIC_URL = '/static/'
  STATIC_ROOT = 'static'
-
+ 
  # Security stuff for deploy only
 -# SESSION_COOKIE_SECURE = True
 -# CSRF_COOKIE_SECURE = True
@@ -41,3 +41,6 @@ index e47b154..97d05ea 100644
 +SECURE_HSTS_PRELOAD = True
 +SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 +SECURE_SSL_REDIRECT = True
+ 
+ LOGGING_CONFIG = None
+ 
