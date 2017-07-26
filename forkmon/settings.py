@@ -146,3 +146,51 @@ STATIC_ROOT = 'static'
 # SECURE_HSTS_PRELOAD = True
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURE_SSL_REDIRECT = True
+
+LOGGING_CONFIG = None
+
+LOGGING = {
+
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        }
+    },
+
+    'handlers': {
+            'task': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': BASE_DIR + '/logs/task.log',
+                'formatter': 'verbose',
+                'maxBytes': 5000000,
+                'backupCount' : 2
+            },
+            'system': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': BASE_DIR + '/logs/system.log',
+                'formatter': 'verbose',
+                'maxBytes': 5000000,
+                'backupCount': 2
+            }
+        },
+
+    'loggers': {
+
+            'django': {
+                'handlers': ['system'],
+                'propagate': True,
+            },
+
+            'forkmon.task': {
+                'level': 'DEBUG',
+                'handlers': ['task'],
+                'propagate': True,
+            }
+    }
+}
+
+import logging.config
+logging.config.dictConfig(LOGGING)
