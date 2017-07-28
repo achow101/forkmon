@@ -35,7 +35,7 @@
     {% endif %}
     <div class="card-deck my-2 mx-2">
     {% for n in nodes %}
-        <div class="card {% if is_forked %}card-danger{% elif not n.is_up %}card-info{% elif has_forked %}card-warning
+        <div class="card {% if n.sched_forked %}card-primary{% elif is_forked %}card-danger{% elif not n.is_up %}card-info{% elif has_forked %}card-warning
             {% else %}card-success{% endif %} my-2" style="width: 20rem;">
             <div class="card-header text-white">
                 Node: {{ n.name }}
@@ -54,6 +54,9 @@
                 {% if n.highest_divergence > 0 %}
                     <li class="list-group-item">Most Recent Forking Block Hash: <small>{{ n.highest_diverged_hash }}</small></li>
                     <li class="list-group-item">Most Recent Forking Block Height: {{ n.highest_divergence }}</li>
+                {% endif %}
+                {% if n.sched_forked %}
+                    <li class="list-group-item">This node's scheduled chain split has occurred</li>
                 {% endif %}
             </ul>
             <div class="card-footer">

@@ -8,6 +8,15 @@ class ForkState(models.Model):
     def __str__(self):
         return "Has Forked: " + str(self.has_forked) + "Is Currently Forked: " + str(self.is_currently_forked)
 
+
+# Forks that activate at a median time
+class MTFork(models.Model):
+    name = models.CharField(max_length=100)
+    activation_time = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.name
+
 class Node(models.Model):
     name = models.CharField(max_length=100)
     url = models.CharField(max_length=100)
@@ -21,6 +30,8 @@ class Node(models.Model):
     highest_diverged_hash = models.CharField(max_length=64, blank=True)
     stats_node = models.BooleanField(default=False)
     mtp = models.DateTimeField(default=timezone.now)
+    mtp_fork = models.ForeignKey(MTFork, blank=True, null=True)
+    sched_forked = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.name)
@@ -49,14 +60,6 @@ class BIP9Fork(models.Model):
     def __str__(self):
         return self.name + " " + self.state + " " + str(self.count) + "/" + str(self.elapsed) \
         + " (" + str(self.threshold) + "/" + str(self.period) + " required)"
-
-# Forks that activate at a median time
-class MTFork(models.Model):
-    name = models.CharField(max_length=100)
-    activation_time = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.name
 
 class UpdateLock(models.Model):
     in_use = models.BooleanField(default=False)

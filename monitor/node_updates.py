@@ -241,6 +241,11 @@ def update_nodes():
             # skip if there is no blockchain for some reason or if the node is down
             if not cmp_blockchain or not cmp_node.is_up:
                 continue
+
+            # If the two nodes have mtp forks, skip their comparison
+            if cmp_node.mtp_fork and node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time and node.mtp > node.mtp_fork.activation_time:
+                continue
+
             no_split = False
 
             # get these to matching heights
@@ -264,7 +269,19 @@ def update_nodes():
                     node.highest_diverged_hash = blockchain[it - 1].hash
                     node.save()
 
-            # split detected, mark as such
+            # For MTP forks. Mark MTP forks as no_split
+            if diverged > 0:
+                # Only mark node has having MTP forked if node's mtp is past the mtp fork time
+                if node.mtp_fork and node.mtp > node.mtp_fork.activation_time:
+                    no_split = True
+                    node.sched_forked = True
+                    node.save()
+                    continue
+                # If the cmp_node had an mtp fork, ignore this divergence.
+                elif cmp_node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time:
+                    no_split = True
+                    continue
+            # Normal split detected, mark as such
             if diverged > 1:
                 has_split = True
                 if it - 1 < 0:
