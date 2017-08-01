@@ -273,11 +273,7 @@ def update_nodes():
             if diverged > 1:
                 # Only mark node has having MTP forked if node's mtp is past the mtp fork time
                 if node.mtp_fork and node.mtp > node.mtp_fork.activation_time:
-                    no_split = True
                     node.sched_forked = True
-                # If the cmp_node had an mtp fork, ignore this divergence.
-                elif cmp_node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time:
-                    no_split = True
                 # Otherwise this is a chain split
                 else:
                     has_split = True
