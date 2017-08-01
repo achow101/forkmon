@@ -38,7 +38,7 @@
         <div class="card {% if n.sched_forked %}card-primary{% elif is_forked %}card-danger{% elif not n.is_up %}card-info{% elif has_forked %}card-warning
             {% else %}card-success{% endif %} my-2" style="width: 20rem;">
             <div class="card-header text-white">
-                Node: {{ n.name }}
+                {{ n.name }}
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">Current height: {{ n.best_block_height }}</li>
