@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [
     'www.btcforkmonitor.info',
     '127.0.0.1',
     'localhost',
+    'btcforkmonitor.info',
 ]
 
 
