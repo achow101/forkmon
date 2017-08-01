@@ -250,15 +250,15 @@ def update_nodes():
             no_split = False
 
             # get these to matching heights
-            while cmp_blockchain[cmp_it].height > blockchain[it].height and diverged <= 6:
+            while cmp_blockchain[cmp_it].height > blockchain[it].height and diverged <= 100:
                 cmp_it += 1
                 diverged += 1
-            while blockchain[it].height > cmp_blockchain[cmp_it].height and diverged <= 6:
+            while blockchain[it].height > cmp_blockchain[cmp_it].height and diverged <= 100:
                 it += 1
                 diverged += 1
 
             # walk down both chains until common ancestor found
-            while blockchain[it].hash != cmp_blockchain[cmp_it].hash and diverged <= 15:
+            while blockchain[it].hash != cmp_blockchain[cmp_it].hash and diverged <= 100:
                 cmp_it += 1
                 it += 1
                 diverged += 1
