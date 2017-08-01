@@ -22,15 +22,15 @@
 
     {% if is_forked %}
         <div style="font-size: x-large" align="center" class="alert alert-danger mt-4 mx-2">
-        WARNING: A CHAIN SPLIT HAS BEEN DETECTED.
+        WARNING: AN UNPLANNED CHAIN SPLIT HAS BEEN DETECTED.
         </div>
     {% elif has_forked %}
         <div style="font-size: x-large" align="center" class="alert alert-warning mt-4 mx-2">
-        WARNING: A CHAIN SPLIT WAS DETECTED BUT HAS BEEN RE-ORGED.
+        WARNING: AN UNPLANNED CHAIN SPLIT WAS DETECTED BUT HAS BEEN RE-ORGED.
         </div>
     {% else %}
         <div style="font-size: x-large" align="center" class="alert alert-success mt-4 mx-2">
-        NO CHAIN SPLIT DETECTED.
+        NO UNPLANNED CHAIN SPLIT DETECTED.
         </div>
     {% endif %}
     <div class="card-deck my-2 mx-2">
@@ -45,6 +45,7 @@
                 <li class="list-group-item">Current Median Time: {{ n.mtp }} UTC</li>
                 <li class="list-group-item ">Best Block Hash: <small>{{ n.best_block_hash }}</small></li>
                 <li class="list-group-item">Previous Block Hash: <small>{{ n.prev_block_hash }}</small></li>
+                <li class="list-group-item">Timestamp of Best Block: {{ n.best_block_time }} UTC</li>
                 <li class="list-group-item">
                     Has Experienced a Blockchain Reorganization: {% if n.has_reorged %}
                     <span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>

@@ -61,6 +61,7 @@ def update_nodes():
 
             # Update node's MTP
             node.mtp = datetime.datetime.fromtimestamp(header['mediantime'], timezone.utc)
+            node.best_block_time = datetime.datetime.fromtimestamp(header['time'], timezone.utc)
 
             # check that this node's current top block is this block or the previous block
             blocks = Block.objects.all().filter(node=node, active=True).order_by("-height")
@@ -281,10 +282,10 @@ def update_nodes():
                 # Otherwise this is a chain split
                 else:
                     has_split = True
-                    if it - 1 < 0:
-                        node.is_behind = True
-                    else:
-                        node.is_behind = False
+                if it - 1 < 0:
+                    node.is_behind = True
+                else:
+                    node.is_behind = False
                 node.save()
 
     # Update fork state if split detected

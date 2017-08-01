@@ -32,6 +32,7 @@ class Node(models.Model):
     mtp = models.DateTimeField(default=timezone.now)
     mtp_fork = models.ForeignKey(MTFork, blank=True, null=True)
     sched_forked = models.BooleanField(default=False)
+    best_block_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return str(self.name)
