@@ -268,7 +268,6 @@ def update_nodes():
                 if blockchain[it - 1].height > node.highest_divergence and diverged > 1:
                     node.highest_divergence = blockchain[it - 1].height
                     node.highest_diverged_hash = blockchain[it - 1].hash
-                    node.save()
 
             # Normal split detected, mark as such
             if diverged > 1:
@@ -286,7 +285,7 @@ def update_nodes():
                     node.is_behind = True
                 else:
                     node.is_behind = False
-                node.save()
+            node.save()
 
     # Update fork state if split detected
     states = ForkState.objects.all()
