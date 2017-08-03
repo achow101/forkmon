@@ -107,6 +107,17 @@
             nodes has recently experienced a blockchain reorganization.
         </p>
         <p class="lead">
+            <b>What do the colors mean?</b> There are 4 possible colors for the nodes and that this website will show. When
+            a node is colored green and the banner is green, that means that all nodes which do not have a scheduled persistent
+            chain split agree with each other. Dark blue nodes are nodes which have a scheduled persistent chain split that
+            has activated by activation time and has split onto a different blockchain than the other nodes. Pale blue nodes
+            are ones which the updater received no response for and those nodes will be listed as being down. If an unplanned chain split
+            is detected, all nodes (except dark blue ones) will become red and the banner at the top of the page will become
+            red, warning that an unplanned chain split occurred. If, following a chain split detection with everything being
+            red, the nodes reorganize their blockchain and are all using the same blockchain (except for dark blue nodes),
+            nodes will be colored yellow and a yellow banner will appear to indicate that a blockchain reorganization happened.
+        </p>
+        <p class="lead">
             <b>How does this website work?</b> The website runs a node for each of the nodes displayed above. A process
             runs every ten seconds to check to see if each of the nodes has diverged from each other. To avoid triggering
             the warning in cases of orphaned blocks and latency, the site will only warn if a chain split of more than two
