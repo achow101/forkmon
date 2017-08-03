@@ -18,8 +18,6 @@
     {% load stats_tags %}
 </head>
 <body>
-<div class="container-fluid">
-
     {% if is_forked %}
         <div style="font-size: x-large" align="center" class="alert alert-danger mt-4 mx-2">
         WARNING: AN UNPLANNED CHAIN SPLIT HAS BEEN DETECTED.
@@ -52,7 +50,7 @@
                     Has Experienced a Blockchain Reorganization: {% if n.has_reorged %}
                     <span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>
                 <li class="list-group-item">
-                    Has not forked but is behind other nodes: {% if n.is_behind %}
+                    Is behind other nodes: {% if n.is_behind %}
                     <span class="text-danger font-weight-bold">Yes</span>{% else %}No{% endif %}</li>
                 {% if n.highest_divergence > 0 %}
                     <li class="list-group-item">Most Recent Forking Block Hash: <small>{{ n.highest_diverged_hash }}</small></li>
@@ -137,7 +135,5 @@
             1AQx99s7q1wVinbgXbA48BaZQVWpHe5gYM </a></b>
         </p>
     </div>
-
-</div>
 </body>
 </html>

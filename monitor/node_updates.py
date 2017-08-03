@@ -286,7 +286,8 @@ def update_nodes():
                 # Otherwise this is a chain split
                 else:
                     has_split = True
-                if it - 1 < 0:
+
+                if it < cmp_it:
                     node.is_behind = True
                 else:
                     node.is_behind = False
