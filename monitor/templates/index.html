@@ -56,6 +56,10 @@
                     <li class="list-group-item">Most Recent Forking Block Hash: <small>{{ n.highest_diverged_hash }}</small></li>
                     <li class="list-group-item">Most Recent Forking Block Height: {{ n.highest_divergence }}</li>
                 {% endif %}
+                {% if n.common_ancestor_height > 0 %}
+                    <li class="list-group-item">Most Recent Common Ancestor Hash With Another Node: <small>{{ n.common_ancestor_hash }}</small></li>
+                    <li class="list-group-item">Most Recent Common Ancestor Height With Another Node: {{ n.common_ancestor_height }}</li>
+                {% endif %}
                 {% if n.sched_forked %}
                     <li class="list-group-item">This node's scheduled chain split has occurred</li>
                 {% endif %}

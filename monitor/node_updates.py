@@ -268,6 +268,8 @@ def update_nodes():
                 if blockchain[it - 1].height > node.highest_divergence and diverged > 1:
                     node.highest_divergence = blockchain[it - 1].height
                     node.highest_diverged_hash = blockchain[it - 1].hash
+                    node.common_ancestor_hash = blockchain[it].hash
+                    node.common_ancestor_height = blockchain[it].height
 
             # Normal split detected, mark as such
             if diverged > 1:
