@@ -42,6 +42,8 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">Current height: {{ n.best_block_height }}</li>
+                <li class="list-group-item">Current difficulty: {{ n.difficulty }}</li>
+                <li class="list-group-item">Current chainwork: {{ n.chainwork }}</li>
                 <li class="list-group-item">Current Median Time: {{ n.mtp }} UTC</li>
                 <li class="list-group-item ">Best Block Hash: <small>{{ n.best_block_hash }}</small></li>
                 <li class="list-group-item">Previous Block Hash: <small>{{ n.prev_block_hash }}</small></li>

@@ -35,6 +35,8 @@ class Node(models.Model):
     best_block_time = models.DateTimeField(default=timezone.now)
     common_ancestor_height = models.IntegerField(default=0)
     common_ancestor_hash = models.CharField(max_length=64, blank=True)
+    difficulty = models.DecimalField(default=0, max_digits=20, decimal_places=4)
+    chainwork = models.CharField(max_length=64, default="")
 
     def __str__(self):
         return str(self.name)

@@ -63,6 +63,10 @@ def update_nodes():
             node.mtp = datetime.datetime.fromtimestamp(header['mediantime'], timezone.utc)
             node.best_block_time = datetime.datetime.fromtimestamp(header['time'], timezone.utc)
 
+            # Update node's chainwork and difficulty
+            node.difficulty = header['difficulty']
+            node.chainwork = header['chainwork']
+
             # check that this node's current top block is this block or the previous block
             blocks = Block.objects.all().filter(node=node, active=True).order_by("-height")
 
