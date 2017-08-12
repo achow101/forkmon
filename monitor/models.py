@@ -37,6 +37,7 @@ class Node(models.Model):
     common_ancestor_hash = models.CharField(max_length=64, blank=True)
     difficulty = models.DecimalField(default=0, max_digits=20, decimal_places=4)
     chainwork = models.CharField(max_length=64, default="")
+    last_updated_best = models.CharField(max_length=64, default="")
 
     def __str__(self):
         return str(self.name)

@@ -34,6 +34,7 @@ def update_nodes():
 
     # update in-db chain for each node
     nodes = Node.objects.all()
+    db_update = True
     for node in nodes:
         # try except statements for catching any errors that come from the requests. if there is an error, just skip
         # the node and continue
@@ -69,6 +70,13 @@ def update_nodes():
 
             # check that this node's current top block is this block or the previous block
             blocks = Block.objects.all().filter(node=node, active=True).order_by("-height")
+
+            # Check if last update's best block changed
+            if node.last_updated_best != hash:
+                db_update = False
+
+            # Update the last_updated_best
+            node.last_updated_best = hash
 
             # If there is no blockchain, add the first block
             if not blocks:
@@ -215,102 +223,103 @@ def update_nodes():
             node.save()
             continue
 
-    # now that nodes are updated, check for chain splits
-    nodes = Node.objects.all()
-    has_split = False
-    no_split = True
-    for node in nodes:
-        blockchain = Block.objects.all().filter(node=node, active=True).order_by("-height")
-
-        # skip if there is no blockchain for some reason or the node is down
-        if not blockchain or not node.is_up:
-            continue
-
-        for cmp_node in nodes:
-            # don't compare to self
-            if node == cmp_node:
-                continue
-
-            # check top block is same
-            if node.best_block_hash == cmp_node.best_block_hash:
-                node.is_behind = False
-                continue
-
-            # top block hashes are not the same. find if the divergence is within the past 6 blocks
-            # once the block is found, it will be saved until a new divergence is found
-            cmp_it = 0
-            it = 0
-            diverged = 0
-            cmp_blockchain = Block.objects.all().filter(node=cmp_node, active=True).order_by("-height")
-
-            # skip if there is no blockchain for some reason or if the node is down
-            if not cmp_blockchain or not cmp_node.is_up:
-                continue
-
-            # If the two nodes have mtp forks, skip their comparison
-            if cmp_node.mtp_fork and node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time and node.mtp > node.mtp_fork.activation_time:
-                continue
-
-            no_split = False
-
-            # get these to matching heights
-            while cmp_blockchain[cmp_it].height > blockchain[it].height and diverged <= 100:
-                cmp_it += 1
-                diverged += 1
-            while blockchain[it].height > cmp_blockchain[cmp_it].height and diverged <= 100:
-                it += 1
-                diverged += 1
-
-            # walk down both chains until common ancestor found
-            while blockchain[it].hash != cmp_blockchain[cmp_it].hash and diverged <= 100:
-                cmp_it += 1
-                it += 1
-                diverged += 1
-
-            # updated diverged block if within the last 6
-            if it > 0 and cmp_it > 0 and blockchain[it].hash == cmp_blockchain[cmp_it].hash and blockchain[it - 1].hash != cmp_blockchain[cmp_it - 1].hash:
-                if blockchain[it - 1].height > node.highest_divergence and diverged > 1:
-                    node.highest_divergence = blockchain[it - 1].height
-                    node.highest_diverged_hash = blockchain[it - 1].hash
-                    node.common_ancestor_hash = blockchain[it].hash
-                    node.common_ancestor_height = blockchain[it].height
-
-            # Normal split detected, mark as such
-            if diverged > 1:
-                # Only mark node has having MTP forked if node's mtp is past the mtp fork time
-                if node.mtp_fork and node.mtp > node.mtp_fork.activation_time:
-                    node.sched_forked = True
-                # If the cmp_node had an mtp fork, ignore this divergence.
-                elif cmp_node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time:
-                    pass
-                # Otherwise this is a chain split
-                else:
-                    has_split = True
-
-                if it < cmp_it:
-                    node.is_behind = True
-                else:
-                    node.is_behind = False
-            node.save()
-
-    # Update fork state if split detected
-    states = ForkState.objects.all()
-    if not states:
-        ForkState().save()
-    if has_split:
-        state = ForkState.objects.all()[0]
-        state.has_forked = True
-        state.is_currently_forked = True
-        state.save()
-    if no_split:
-        state = ForkState.objects.all()[0]
-        state.is_currently_forked = False
-        state.save()
-
-        # reset node stuff
+    # now that nodes are updated, check for chain splits only if all nodes did not change from the last update.
+    if db_update:
+        nodes = Node.objects.all()
+        has_split = False
+        no_split = True
         for node in nodes:
-            node.highest_divergence = 0
-            node.save()
+            blockchain = Block.objects.all().filter(node=node, active=True).order_by("-height")
+
+            # skip if there is no blockchain for some reason or the node is down
+            if not blockchain or not node.is_up:
+                continue
+
+            for cmp_node in nodes:
+                # don't compare to self
+                if node == cmp_node:
+                    continue
+
+                # check top block is same
+                if node.best_block_hash == cmp_node.best_block_hash:
+                    node.is_behind = False
+                    continue
+
+                # top block hashes are not the same. find if the divergence is within the past 6 blocks
+                # once the block is found, it will be saved until a new divergence is found
+                cmp_it = 0
+                it = 0
+                diverged = 0
+                cmp_blockchain = Block.objects.all().filter(node=cmp_node, active=True).order_by("-height")
+
+                # skip if there is no blockchain for some reason or if the node is down
+                if not cmp_blockchain or not cmp_node.is_up:
+                    continue
+
+                # If the two nodes have mtp forks, skip their comparison
+                if cmp_node.mtp_fork and node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time and node.mtp > node.mtp_fork.activation_time:
+                    continue
+
+                no_split = False
+
+                # get these to matching heights
+                while cmp_blockchain[cmp_it].height > blockchain[it].height and diverged <= 100:
+                    cmp_it += 1
+                    diverged += 1
+                while blockchain[it].height > cmp_blockchain[cmp_it].height and diverged <= 100:
+                    it += 1
+                    diverged += 1
+
+                # walk down both chains until common ancestor found
+                while blockchain[it].hash != cmp_blockchain[cmp_it].hash and diverged <= 100:
+                    cmp_it += 1
+                    it += 1
+                    diverged += 1
+
+                # updated diverged block if within the last 6
+                if it > 0 and cmp_it > 0 and blockchain[it].hash == cmp_blockchain[cmp_it].hash and blockchain[it - 1].hash != cmp_blockchain[cmp_it - 1].hash:
+                    if blockchain[it - 1].height > node.highest_divergence and diverged > 1:
+                        node.highest_divergence = blockchain[it - 1].height
+                        node.highest_diverged_hash = blockchain[it - 1].hash
+                        node.common_ancestor_hash = blockchain[it].hash
+                        node.common_ancestor_height = blockchain[it].height
+
+                # Normal split detected, mark as such
+                if diverged > 1:
+                    # Only mark node has having MTP forked if node's mtp is past the mtp fork time
+                    if node.mtp_fork and node.mtp > node.mtp_fork.activation_time:
+                        node.sched_forked = True
+                    # If the cmp_node had an mtp fork, ignore this divergence.
+                    elif cmp_node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time:
+                        pass
+                    # Otherwise this is a chain split
+                    else:
+                        has_split = True
+
+                    if it < cmp_it:
+                        node.is_behind = True
+                    else:
+                        node.is_behind = False
+                node.save()
+
+        # Update fork state if split detected
+        states = ForkState.objects.all()
+        if not states:
+            ForkState().save()
+        if has_split:
+            state = ForkState.objects.all()[0]
+            state.has_forked = True
+            state.is_currently_forked = True
+            state.save()
+        if no_split:
+            state = ForkState.objects.all()[0]
+            state.is_currently_forked = False
+            state.save()
+
+            # reset node stuff
+            for node in nodes:
+                node.highest_divergence = 0
+                node.save()
 
     # release database lock
     UpdateLock.objects.filter(version=lock_version + 1).update(in_use = False, version=lock_version + 2)
