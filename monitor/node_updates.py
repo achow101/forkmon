@@ -9,11 +9,11 @@ import datetime
 
 from .models import *
 
-logger = logging.getLogger("forkmon.task")
+#logger = logging.getLogger("forkmon.task")
 
 def update_nodes():
     update_id = get_random_string(length=10)
-    logger.info("Update ID: " + update_id + " - Beginning update at " + str(datetime.datetime.now()))
+    #logger.info("Update ID: " + update_id + " - Beginning update at " + str(datetime.datetime.now()))
 
     # Retrieve the database lock
     lock = UpdateLock.objects.all().first()
@@ -21,7 +21,7 @@ def update_nodes():
 
     # Check that the lock is currently not in use
     if lock.in_use:
-        logger.info("Update ID: " + update_id + " - Database in use, exiting at " + str(datetime.datetime.now()))
+        #logger.info("Update ID: " + update_id + " - Database in use, exiting at " + str(datetime.datetime.now()))
         return
 
     # Update the lock
@@ -29,7 +29,7 @@ def update_nodes():
 
     # exit if 0 objects were updated as that means someone was locking at the same time
     if locked == 0:
-        logger.info("Update ID: " + update_id + " - Database lock version was updated by another process, exiting at " + str(datetime.datetime.now()))
+        #logger.info("Update ID: " + update_id + " - Database lock version was updated by another process, exiting at " + str(datetime.datetime.now()))
         return
 
     # update in-db chain for each node
@@ -324,4 +324,4 @@ def update_nodes():
     # release database lock
     UpdateLock.objects.filter(version=lock_version + 1).update(in_use = False, version=lock_version + 2)
 
-    logger.info("Update ID: " + update_id + " - Completed at " + str(datetime.datetime.now()))
+    #logger.info("Update ID: " + update_id + " - Completed at " + str(datetime.datetime.now()))
