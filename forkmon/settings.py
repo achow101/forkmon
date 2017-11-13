@@ -32,6 +32,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'btcforkmonitor.info',
+    'bcash-forkmon.us-east-1.elasticbeanstalk.com',
+    'bch.btcforkmonitor.info',
 ]
 
 
