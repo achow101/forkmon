@@ -96,6 +96,9 @@
             {% for f in mtpforks %}
                 <li class="list-group-item"> {{ f.name }}: Activates when Median Time is {{ f.activation_time }} UTC or later</li>
             {% endfor %}
+            {% for f in heightforks %}
+                <li class="list-group-item"> {{ f.name }}: Activates when the block height is greater than {{ f.height }}</li>
+            {% endfor %}
         </ul>
     </div>
     <div class="w-75 text-center pt-5 mx-auto">

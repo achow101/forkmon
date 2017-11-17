@@ -17,6 +17,13 @@ class MTFork(models.Model):
     def __str__(self):
         return self.name
 
+class HeightFork(models.Model):
+    name = models.CharField(max_length=100)
+    height = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
 class Node(models.Model):
     name = models.CharField(max_length=100)
     url = models.CharField(max_length=100)
@@ -38,6 +45,7 @@ class Node(models.Model):
     difficulty = models.DecimalField(default=0, max_digits=20, decimal_places=4)
     chainwork = models.CharField(max_length=64, default="")
     last_updated_best = models.CharField(max_length=64, default="")
+    height_fork = models.ForeignKey(HeightFork, blank=True, null=True)
 
     def __str__(self):
         return str(self.name)

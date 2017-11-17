@@ -256,8 +256,8 @@ def update_nodes():
                 if not cmp_blockchain or not cmp_node.is_up:
                     continue
 
-                # If the two nodes have mtp forks, skip their comparison
-                if cmp_node.mtp_fork and node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time and node.mtp > node.mtp_fork.activation_time:
+                # If the two nodes have mtp or height forks, skip their comparison
+                if (cmp_node.mtp_fork and node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time and node.mtp > node.mtp_fork.activation_time) or (cmp_node.height_fork and node.height_fork and cmp_node.best_block_height > cmp_node.height_fork.height and node.best_block_height > node.height_fork.height):
                     continue
 
                 no_split = False
@@ -286,11 +286,11 @@ def update_nodes():
 
                 # Normal split detected, mark as such
                 if diverged > 1:
-                    # Only mark node has having MTP forked if node's mtp is past the mtp fork time
-                    if node.mtp_fork and node.mtp > node.mtp_fork.activation_time:
+                    # Only mark node has having MTP or height forked if node's mtp is past the mtp fork time
+                    if (node.mtp_fork and node.mtp > node.mtp_fork.activation_time) or (node.height_fork and node.best_block_height > node.height_fork.height):
                         node.sched_forked = True
-                    # If the cmp_node had an mtp fork, ignore this divergence.
-                    elif cmp_node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time:
+                    # If the cmp_node had an mtp or height fork, ignore this divergence.
+                    elif (cmp_node.mtp_fork and cmp_node.mtp > cmp_node.mtp_fork.activation_time) or (cmp_node.height_fork and cmp_node.best_block_height > cmp_node.height_fork.height):
                         pass
                     # Otherwise this is a chain split
                     else:

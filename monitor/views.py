@@ -17,5 +17,8 @@ def index(request):
         # mtp forks
         mtpforks = MTFork.objects.all()
 
-        context = {'is_forked':is_forked, 'has_forked':has_forked, 'nodes':nodes, 'forks':forks, 'mtpforks':mtpforks}
+        # height forks
+        heightforks = HeightFork.objects.all()
+
+        context = {'is_forked':is_forked, 'has_forked':has_forked, 'nodes':nodes, 'forks':forks, 'mtpforks':mtpforks, 'heightforks':heightforks}
         return render(request, 'index.html', context)
