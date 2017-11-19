@@ -245,6 +245,10 @@ def update_nodes():
                     node.is_behind = False
                     continue
 
+                # Ignore this if one of the nodes has a scheduled fork
+                if node.sched_forked or cmp_node.sched_forked:
+                    continue;
+
                 # top block hashes are not the same. find if the divergence is within the past 6 blocks
                 # once the block is found, it will be saved until a new divergence is found
                 cmp_it = 0
