@@ -1,1 +1,5 @@
 .idea/
+*.sqlite3
+__pycache__/
+*.zip
+venv/
